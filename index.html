@@ -4,22 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Classroom Resources</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .intro {
+            color: #666;
+            font-size: 1.1em;
+        }
+        #resource-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        #resource-list li {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s;
+        }
+        #resource-list li:hover {
+            transform: translateX(5px);
+        }
+        #resource-list img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            background-color: #eee;
+        }
+        #resource-list a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        #resource-list a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Classroom Resources</h1>
-    <p>Welcome to the Classroom Resources page!</p>
 
-</html>
-<script type="text/javascript">
-    fetch('resources.csv')
-    .then(response => response.text())
-    .then(data => {
-        const lines = data.split('\n');
-        const resources = lines.slice(1).map(line => {
-            const [name, filename] = line.split(',');
-            return { name, filename };
+    <h1>Classroom Resources</h1>
+    <p class="intro">Welcome to the Classroom Resources page!</p>
+    
+    <ul id="resource-list"></ul>
+
+    <script type="text/javascript">
+        const listElement = document.getElementById('resource-list');
+
+        fetch('resources.csv')
+        .then(response => response.text())
+        .then(data => {
+            const lines = data.split('\n');
+            const validLines = lines.slice(1).filter(line => line.trim() !== '');
+
+            validLines.forEach(line => {
+                const [name, filename, photo] = line.split(',');
+                
+                if (name && filename) {
+                    const li = document.createElement('li');
+                    
+                    // Add image if photo exists
+                    if (photo && photo.trim() !== '') {
+                        const img = document.createElement('img');
+                        img.src = photo.trim();
+                        img.alt = name.trim();
+                        li.appendChild(img);
+                    }
+                    
+                    // Format the path: links to "./files/filename.html"
+                    const cleanFilename = filename.trim();
+                    const fullPath = `./files/${cleanFilename}.html`;
+
+                    // Add link
+                    const a = document.createElement('a');
+                    a.href = fullPath;
+                    a.textContent = name.trim();
+                    a.target = "_blank";
+                    
+                    li.appendChild(a);
+                    listElement.appendChild(li);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching resources:', error);
+            listElement.innerHTML = `<li>Error loading resources. Please try again later.</li>`;
         });
-        console.log(resources);
-    })
-    .catch(error => console.error('Error fetching resources:', error));
-</script>
+    </script>
+</body>
+</html>
