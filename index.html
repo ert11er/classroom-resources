@@ -5,64 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Classroom Resources</title>
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 0 20px;
-            background-color: #f9f9f9;
-            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--text-main);
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            line-height: 1.5;
         }
+
+        .header {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
         h1 {
-            color: #2c3e50;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            letter-spacing: -0.025em;
         }
+
         .intro {
-            color: #666;
-            font-size: 1.1em;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 0;
         }
+
         #resource-list {
             list-style: none;
             padding: 0;
-            margin-top: 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
+
         #resource-list li {
-            background: white;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            transition: transform 0.2s;
+            gap: 16px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease-in-out;
         }
+
         #resource-list li:hover {
-            transform: translateX(5px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
         }
-        #resource-list img {
-            width: 50px;
-            height: 50px;
+
+        .resource-img-wrapper {
+            width: 56px;
+            height: 56px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+        }
+
+        .resource-img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border-radius: 4px;
-            background-color: #eee;
         }
-        #resource-list a {
-            color: #3498db;
+
+        /* Fallback icon when no photo is available */
+        .resource-icon-fallback {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            user-select: none;
+        }
+
+        .resource-info {
+            flex-grow: 1;
+        }
+
+        .resource-link {
+            color: var(--text-main);
             text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1em;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.15s ease;
         }
-        #resource-list a:hover {
-            text-decoration: underline;
+
+        .resource-link:hover {
+            color: var(--primary);
+        }
+
+        /* Tiny arrow indicator next to the link */
+        .resource-link::after {
+            content: "→";
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: all 0.15s ease;
+        }
+
+        .resource-link:hover::after {
+            opacity: 1;
+            transform: translateX(0);
         }
     </style>
 </head>
 <body>
 
-    <h1>Classroom Resources</h1>
-    <p class="intro">Welcome to the Classroom Resources page!</p>
+    <div class="header">
+        <h1>Classroom Resources</h1>
+        <p class="intro">Welcome to the Classroom Resources page!</p>
+    </div>
     
     <ul id="resource-list"></ul>
 
@@ -81,32 +154,45 @@
                 if (name && filename) {
                     const li = document.createElement('li');
                     
-                    // Add image if photo exists
+                    // Create Image Wrapper
+                    const imgWrapper = document.createElement('div');
+                    imgWrapper.className = 'resource-img-wrapper';
+
                     if (photo && photo.trim() !== '') {
                         const img = document.createElement('img');
                         img.src = photo.trim();
                         img.alt = name.trim();
-                        li.appendChild(img);
+                        img.className = 'resource-img';
+                        imgWrapper.appendChild(img);
+                    } else {
+                        // Document icon fallback if photo column is empty
+                        imgWrapper.innerHTML = '<span class="resource-icon-fallback">📄</span>';
                     }
+                    li.appendChild(imgWrapper);
                     
-                    // Format the path: links to "./files/filename.html"
+                    // Create Info Wrapper
+                    const infoWrapper = document.createElement('div');
+                    infoWrapper.className = 'resource-info';
+
+                    // Format path: ./files/filename.html
                     const cleanFilename = filename.trim();
                     const fullPath = `./files/${cleanFilename}.html`;
 
-                    // Add link
                     const a = document.createElement('a');
                     a.href = fullPath;
                     a.textContent = name.trim();
+                    a.className = 'resource-link';
                     a.target = "_blank";
                     
-                    li.appendChild(a);
+                    infoWrapper.appendChild(a);
+                    li.appendChild(infoWrapper);
                     listElement.appendChild(li);
                 }
             });
         })
         .catch(error => {
             console.error('Error fetching resources:', error);
-            listElement.innerHTML = `<li>Error loading resources. Please try again later.</li>`;
+            listElement.innerHTML = `<li style="justify-content: center; color: #ef4444;">Error loading resources. Please try again later.</li>`;
         });
     </script>
 </body>
