@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Resources</title>
+</head>
+<body>
+    <h1>Classroom Resources</h1>
+    <p>Welcome to the Classroom Resources page!</p>
+
+</html>
+<script type="text/javascript">
+    fetch('resources.csv')
+    .then(response => response.text())
+    .then(data => {
+        const lines = data.split('\n');
+        const resources = lines.slice(1).map(line => {
+            const [name, filename] = line.split(',');
+            return { name, filename };
+        });
+        console.log(resources);
+    })
+    .catch(error => console.error('Error fetching resources:', error));
+</script>
